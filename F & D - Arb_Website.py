@@ -28,7 +28,7 @@ class ArbFinder(object):
             self.driver.get(URL)
         except:
             pass
-        self.sport = 'Baseball'
+        self.sport = 'Basketball'
 
     def set_type(self, ASK=0, BID=1):
         # time.sleep(1)
@@ -38,12 +38,11 @@ class ArbFinder(object):
             if (ASK):
                 # Change to ask view since the default is the bid view
                 self.type = "ASK"
-                self.driver.find_element(By.XPATH, "//a[contains(@href,'/live')]//span[text()='" + self.sport + "']").click()
-
+                # self.driver.find_element(By.XPATH, "//a[contains(@href,'/live')]//span[text()='" + self.sport + "']").click()
             elif (BID):
                 # Nothing to update since the default is the bid view
                 self.type = "BID"
-                self.driver.find_element(By.XPATH, "//a[@role='tab']/span[text()='" + self.sport + "']").click()
+                # self.driver.find_element(By.XPATH, "//a[@role='tab']/span[text()='" + self.sport + "']").click()
         except Exception as e:
             print(e)
 
@@ -60,17 +59,18 @@ class App(object):
         self.bet_limit = 0.10  # Most websites require a minimum of $0.10 a wager on each bet
         self.odds_limit = 750  # The upper odds limit that you want to wager on (i.e. +750)
 
-        self.ask = ArbFinder('https://sportsbook.fanduel.com/live')
+        self.ask = ArbFinder('https://sportsbook.fanduel.com/navigation/ncaab')
         self.ask.driver.implicitly_wait(5)
         self.ask.set_type(ASK=1, BID=0)
         self.running = False
 
-        self.bid = ArbFinder('https://sportsbook.draftkings.com/live')
+        self.bid = ArbFinder('https://sportsbook.draftkings.com/leagues/basketball/ncaab')
         self.bid.driver.implicitly_wait(5)
         self.bid.set_type(ASK=0, BID=1)
         self.running = False
 
-        self.ignored_exceptions = (NoSuchElementException, StaleElementReferenceException,)
+        # self.ignored_exceptions = (NoSuchElementException, StaleElementReferenceException,)
+        self.ignored_exceptions = ()
 
     def PrintException(self):
         exc_type, exc_obj, tb = sys.exc_info()
@@ -306,7 +306,7 @@ class App(object):
                 self.show_error = True
                 for k in self.dict_intersection_2:
                     self.wagering = self.dict_intersection_2[k]
-                    #print(self.wagering)
+                    print(self.wagering)
 
                     # Convert negative odds to positive values
                     for i in range(1):
@@ -357,10 +357,10 @@ class App(object):
 
                                 self.wagering[i+1][j][q] = self.wager_val2
 
-                    #print(self.wagering)
+                    print(self.wagering)
 
-                    #self.toc = time.perf_counter()
-                    #print(self.toc - self.tic)
+                    self.toc = time.perf_counter()
+                    print(self.toc - self.tic)
 
                     # Using the Nash equilibrium, find if there are arbitrage opportunities
                     # If there are opportunities, click the wagers
@@ -470,12 +470,10 @@ class App(object):
                                         self.pool.join()
 
                                         if self.ask_button != None and self.ask_button != None:
-                                            '''
                                             self.pool.apply_async(self.process, args=(9, 0, 0, 0,))
                                             self.pool.apply_async(self.process, args=(10, 0, 0, 0,))
                                             # Join the pools so they run in parallel
                                             self.pool.join()
-                                            '''
 
                                             print(True)
                                             print(k, self.wagering)
